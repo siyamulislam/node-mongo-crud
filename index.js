@@ -1,5 +1,8 @@
 const express = require('express');
 const cors = require('cors');
+const bodyParser = require('body-parser');
+
+
 const port = 3000
 const userName = "SiyamIDT"
 const password = 's6HoINYtsmTDvhca'
@@ -9,33 +12,42 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 
 const app = express();
+app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }))
 
+// //console.log(client);
+// client.connect(err => {
+//     const collection = client.db("organicDB").collection("products");
+//     // perform actions on the collection object
+//     //  addProduct(collection)
 
-client.connect(err => {
-    const collection = client.db("organicDB").collection("products");
-    // perform actions on the collection object
-       //  addProduct(collection)
+//     //    const product= {name:'modhu',quantity:87,price:980}
+//     //    collection.insertOne( product )
+//      console.log(err);
 
+//     console.log('db connected');
+//     client.close()
+// });
+app.post('/addProduct', (req, res) => {
+    const product = req.body;
+    console.log(product);
+    client.connect(err => {
+        const collection = client.db("organicDB").collection("products");
+      
+           collection.insertOne( product )
+           .then(result=> {
+            console.log("inserted")
+            res.send("Success")
+           })
     
-   const product= {name:'modhu',quantity:87,price:980}
-   collection.insertOne( product )
-   .then(result=> console.log("inserted"))
-    
-    console.log('db connected');
-      client.close()
-});
-async function addProduct(collection){
-    const doc = { name: "Neapolitan pizza", shape: "round" };
-    const result = await collection.insertOne(doc)
-    .then(result=>{
-        console.log(
-            `A document was inserted with the _id: ${result.insertedId}`,
-         ); 
-    })
-        
-}
+        console.log('db connected');
+        // client.close()
+    });
+
+})
 app.get('/', (req, res) => {
-    res.send('hello I am work')
+    res.sendFile(__dirname + '/index.html')
 })
 app.listen(port);
 
