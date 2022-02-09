@@ -1,19 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
+
 <body>
     <h1>Hi dude</h1>
     <form action="/addProduct" method="post">
 
-        <input type="text"name="name" placeholder="Name"><br>
-        <input type="text"name="price" placeholder="Price"><br>
-        <input type="text"name="quantity" placeholder="Quantity"><br>
+        <input type="text" name="name" placeholder="Name"><br>
+        <input type="text" name="price" placeholder="Price"><br>
+        <input type="text" name="quantity" placeholder="Quantity"><br>
         <button type="submit">Add Product</button>
     </form>
+    <h3 style="color: red;"> Product List</h3>
+    <div id="products">
+
+    </div>
+    <script>
+        loadProducts()
+
+
+
+        function deleteProduct(id) {
+            console.log(id);
+            fetch(`/delete/${id}`,
+            {method:'DELETE'})
+            .then(res=>res.json())
+            .then(result=> console.log('deleted'))
+        }
+
+        function loadProducts() {
+            const url = "/products"
+            const productsContainer = document.getElementById("products");
+            fetch(url)
+                .then(res => res.json())
+                .then(products => {
+
+                    products.map(pd => {
+                        console.log(pd);
+                        const p = document.createElement('div');
+                        p.innerHTML = `
+                        <P >${pd.name} Quantity:${pd.quantity} Unit Price: ${pd.price}
+                            <button onclick="deleteProduct('${pd._id}')">Delete</button>
+                            
+                            </p>
+                           
+                            `
+                        productsContainer.appendChild(p)
+                    })
+                    // products.forEach(pd => {
+                    //     console.log(pd.name);
+                    //     const p = document.createElement('p');
+                    //     p.innerHTML = ` ${pd.name} Quantity:${pd.quantity} Unit Price: ${pd.price}`
+                    //    productsContainer.appendChild(p)
+                    // });
+                })
+        }
+
+    </script>
 </body>
+
 </html>
