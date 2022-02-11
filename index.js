@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const port = 3000
 const userName = "SiyamIDT"
 const password = 's6HoINYtsmTDvhca'
-const { MongoClient,ObjectId } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb');
 const uri = "mongodb+srv://SiyamIDT:s6HoINYtsmTDvhca@cluster0.7oely.mongodb.net/organicDB?retryWrites=true&w=majority";
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
@@ -32,32 +32,38 @@ app.use(bodyParser.urlencoded({ extended: false }))
 
 client.connect(err => {
     const collection = client.db("organicDB").collection("products");
-
+    
     app.post('/addProduct', (req, res) => {
         const product = req.body;
         console.log(product);
         collection.insertOne(product)
             .then(result => {
-                console.log("inserted")
-                res.send("Success")
+                console.log("inserted");
+                res.send("Success");
             });
     })
 
     app.get('/products', (req, res) => {
         collection.find({}).limit(30).toArray((err, document) => {
-            console.log(document);
+           // console.log(document);
             res.send(document);
         })
     })
+    app.get('/product/:id',(req,res)=>{
+        collection.find({_id:ObjectId(req.params.id)})
+        .toArray((err,document)=>{
+            res.send(document[0])
+        })
+    })
 
-    app.delete('/delete/:id',(req,res)=>{
+    app.delete('/delete/:id', (req, res) => {
         console.log(req.params.id);
 
-        collection.deleteOne({_id:ObjectId(req.params.id)})
+        collection.deleteOne({ _id: ObjectId(req.params.id) })
             .then(result => {
                 console.log("deleted from api")
-               // console.log(result)
-             //   res.send("Success")
+                // console.log(result)
+                //   res.send("Success")
             });
     })
 
