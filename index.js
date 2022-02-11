@@ -39,7 +39,8 @@ client.connect(err => {
         collection.insertOne(product)
             .then(result => {
                 console.log("inserted");
-                res.send("Success");
+                // res.send("Success");
+                res.redirect("/");
             });
     })
 
@@ -58,31 +59,26 @@ client.connect(err => {
     app.patch('/update/:id', (req, res) => {
         collection.updateOne(
             { _id: ObjectId(req.params.id) },
-            {$set: {
-                name:req.body.name,
-                price:req.body.price,
-                quantity:req.body.quantity
-            }} )
-        .then(result=>{
-            console.log(result)
-            if(result.modifiedCount=1){
-                console.log('updated by API');
-                // req.send('/products')
-            }
-        }) 
+            {
+                $set: {
+                    name: req.body.name,
+                    price: req.body.price,
+                    quantity: req.body.quantity
+                }
+            })
+            .then(result => {
+                res.send(result.modifiedCount > 0)
+            })
     })
 
     app.delete('/delete/:id', (req, res) => {
         console.log(req.params.id);
-
         collection.deleteOne({ _id: ObjectId(req.params.id) }
-       
-        
         )
             .then(result => {
                 console.log("deleted from api")
                 // console.log(result)
-                //   res.send("Success")
+                res.send(result.deletedCount > 0)
             });
     })
 

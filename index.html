@@ -5,11 +5,11 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Crud Operation </title>
 </head>
 
 <body>
-    <h1>Hi dude</h1>
+    <h1>JS MONGO DB CRUD</h1>
     <form action="/addProduct" method="post">
         <input type="text" name="name" placeholder="Name">
         <input type="text" name="price" placeholder="Price">
@@ -23,12 +23,15 @@
     <script>
         loadAllProducts()
 
-        function deleteProduct(id) {
-            console.log(id);
+        function deleteProduct(event ,id) { 
             fetch(`/delete/${id}`,
                 { method: 'DELETE' })
                 .then(res => res.json())
-                .then(result => console.log('deleted'))
+                .then(result => {
+                    if(result){
+                        event.target.parentNode.style.display='none'
+                    }
+                })
         }
         function updateProduct(id) {
             console.log(id);
@@ -44,12 +47,19 @@
                     body: JSON.stringify(product)
                 })
                 .then(res => res.json())
-                .then(result => console.log('updated'))
+                .then(result => {
+                    console.log(result);
+                    if(result){
+                        loadAllProducts()
+                       document.getElementById("update").innerHTML=''
+                    }
+                })
         }
         function loadProduct(id) {
             // console.log(id);
             const url = `/product/${id}`
             const updateContainer = document.getElementById("update");
+            
             fetch(url)
                 .then(res => res.json())
                 .then(product => {
@@ -67,6 +77,7 @@
         function loadAllProducts() {
             const url = "/products"
             const productsContainer = document.getElementById("products");
+            productsContainer.innerHTML=''
             fetch(url)
                 .then(res => res.json())
                 .then(products => {
@@ -74,9 +85,9 @@
                     products.map(pd => {
                         const p = document.createElement('div');
                         p.innerHTML = `
-                            <P >${pd.name} Quantity:${pd.quantity} Unit Price: ${pd.price}
+                            <P >${pd.name} Quantity:${pd.quantity} Price: ${pd.price}
                                 <button onclick="loadProduct('${pd._id}')">Update</button>
-                                <button onclick="deleteProduct('${pd._id}')">Delete</button>
+                                <button onclick="deleteProduct(event, '${pd._id}')">Delete</button>
                                 
                             </p>
                            
