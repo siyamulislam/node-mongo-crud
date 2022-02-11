@@ -11,7 +11,6 @@
 <body>
     <h1>Hi dude</h1>
     <form action="/addProduct" method="post">
-
         <input type="text" name="name" placeholder="Name">
         <input type="text" name="price" placeholder="Price">
         <input type="text" name="quantity" placeholder="Quantity">
@@ -19,17 +18,33 @@
     </form>
     <h3 style="color: red;"> Product List</h3>
     <div id="update"> </div>
-    <div id="products">  </div>
-  
+    <div id="products"> </div>
+
     <script>
         loadAllProducts()
 
         function deleteProduct(id) {
             console.log(id);
             fetch(`/delete/${id}`,
-            {method:'DELETE'})
-            .then(res=>res.json())
-            .then(result=> console.log('deleted'))
+                { method: 'DELETE' })
+                .then(res => res.json())
+                .then(result => console.log('deleted'))
+        }
+        function updateProduct(id) {
+            console.log(id);
+            const name = document.getElementById('name').value;
+            const price = document.getElementById('price').value;
+            const quantity = document.getElementById('quantity').value;
+            const product = { id, name, price, quantity }
+            console.log(product);
+            fetch(`/update/${id}`,
+                {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json'},
+                    body: JSON.stringify(product)
+                })
+                .then(res => res.json())
+                .then(result => console.log('updated'))
         }
         function loadProduct(id) {
             // console.log(id);
@@ -39,27 +54,14 @@
                 .then(res => res.json())
                 .then(product => {
                     console.log(product);
-                    updateContainer.innerHTML=`
+                    updateContainer.innerHTML = `
                 <h4>Update: ${product._id}</h4>
-                Name: <input type="text" value="${product.name}" name="name" placeholder="Name">
-                price: <input type="text" value="${product.price}" name="price" placeholder="Price">
-                Quantity: <input type="text" value="${product.quantity}" name="quantity" placeholder="Quantity">
-                    <button onclick=(${console.log('object')})>Submit</button>
+                Name: <input type="text" value="${product.name}" id="name" placeholder="Name">
+                price: <input type="text" value="${product.price}" id="price" placeholder="Price">
+                Quantity: <input type="text" value="${product.quantity}" id="quantity" placeholder="Quantity">
+                    <button onclick="updateProduct('${product._id}')">Submit</button>
                 `
-
-                    // products.map(pd => {
-                    //     console.log(pd);
-                    //     const p = document.createElement('div');
-                    //     p.innerHTML = `
-                    //     <P >${pd.name} Quantity:${pd.quantity} Unit Price: ${pd.price}
-                    //         <button onclick="loadProduct('${pd._id}')">Update</button>
-                    //         <button onclick="deleteProduct('${pd._id}')">Delete</button>
-                    //         </p> 
-                    //         `
-                    //     productsContainer.appendChild(p)
-                    // }) 
-
-                }) 
+                })
         }
 
         function loadAllProducts() {
@@ -69,7 +71,7 @@
                 .then(res => res.json())
                 .then(products => {
 
-                    products.map(pd => { 
+                    products.map(pd => {
                         const p = document.createElement('div');
                         p.innerHTML = `
                             <P >${pd.name} Quantity:${pd.quantity} Unit Price: ${pd.price}

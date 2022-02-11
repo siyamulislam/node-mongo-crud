@@ -32,7 +32,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 
 client.connect(err => {
     const collection = client.db("organicDB").collection("products");
-    
+
     app.post('/addProduct', (req, res) => {
         const product = req.body;
         console.log(product);
@@ -45,21 +45,40 @@ client.connect(err => {
 
     app.get('/products', (req, res) => {
         collection.find({}).limit(30).toArray((err, document) => {
-           // console.log(document);
+            // console.log(document);
             res.send(document);
         })
     })
-    app.get('/product/:id',(req,res)=>{
-        collection.find({_id:ObjectId(req.params.id)})
-        .toArray((err,document)=>{
-            res.send(document[0])
-        })
+    app.get('/product/:id', (req, res) => {
+        collection.find({ _id: ObjectId(req.params.id) })
+            .toArray((err, document) => {
+                res.send(document[0])
+            })
+    })
+    app.patch('/update/:id', (req, res) => {
+        collection.updateOne(
+            { _id: ObjectId(req.params.id) },
+            {$set: {
+                name:req.body.name,
+                price:req.body.price,
+                quantity:req.body.quantity
+            }} )
+        .then(result=>{
+            console.log(result)
+            if(result.modifiedCount=1){
+                console.log('updated by API');
+                // req.send('/products')
+            }
+        }) 
     })
 
     app.delete('/delete/:id', (req, res) => {
         console.log(req.params.id);
 
-        collection.deleteOne({ _id: ObjectId(req.params.id) })
+        collection.deleteOne({ _id: ObjectId(req.params.id) }
+       
+        
+        )
             .then(result => {
                 console.log("deleted from api")
                 // console.log(result)
